@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANA CAROLINA BEAUTY • Designer de Sobrancelhas</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-link" onclick="switchView('home'); return false;">
+        <div class="brand-icon">✨</div>
+        <div>
+          <div class="brand-title">ANA CAROLINA BEAUTY</div>
+          <div class="brand-subtitle">Design de Sobrancelhas</div>
+        </div>
+      </a>
+
+      <nav class="nav-actions">
+        <button class="nav-tab-btn active" id="nav-btn-home" onclick="switchView('home')">
+          🏠 Início & Serviços
+        </button>
+        <button class="nav-tab-btn" id="nav-btn-book" onclick="switchView('book')">
+          📅 Agendar Horário
+        </button>
+        <button class="nav-tab-btn hidden" id="nav-btn-my-appointments" onclick="switchView('my-appointments')">
+          📋 Meus Agendamentos
+        </button>
+        <button class="nav-tab-btn hidden" id="nav-btn-supervisor" onclick="switchView('supervisor')">
+          👑 Painel Supervisora
+        </button>
+
+        <div id="auth-actions-logged-out" class="flex-gap">
+          <button class="btn btn-outline-primary btn-sm" onclick="openLoginModal()">Entrar</button>
+          <button class="btn btn-primary btn-sm" onclick="openRegisterModal()">Cadastrar</button>
+        </div>
+
+        <div id="auth-actions-logged-in" class="flex-gap hidden">
+          <div class="user-badge" style="cursor: pointer;" onclick="openProfileModal()" title="Minha conta">
+            <span id="user-display-name">Carregando...</span>
+            <span id="user-display-role" class="role-tag">Cliente</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="handleLogout()" title="Sair da conta">Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero-banner">
+    <div class="hero-content">
+      <div class="hero-pill">✨ Especialista em Harmonia Facial & Olhar</div>
+      <h1 class="hero-title">Realce a sua beleza com o olhar <span>perfeito</span></h1>
+      <p class="hero-subtitle">
+        Atendimento exclusivo com técnicas modernas: Design com Visagismo, Henna Natural, Brow Lamination e Nanoblading. Escolha seu horário com total comodidade.
+      </p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="switchView('book')">
+          📅 Agendar Agora
+        </button>
+        <button class="btn btn-secondary" onclick="scrollToServices()">
+          Ver Serviços & Preços
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-wrapper">
+
+    <!-- VIEW 1: HOME / CATÁLOGO DE SERVIÇOS -->
+    <div id="view-home">
+      <div class="card" id="services-section">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span class="icon">🌸</span> Nossos Procedimentos</h2>
+            <p style="color: var(--gray-muted); font-size: 0.95rem;">Escolha o procedimento ideal e agende com a nossa designer especialista</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="switchView('book')">
+            Agendar Horário
+          </button>
+        </div>
+
+        <div id="services-list" class="services-grid">
+          <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Carregando serviços...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: FLUXO DE AGENDAMENTO (CLIENTE) -->
+    <div id="view-book" class="hidden">
+      <div class="booking-section">
+        <div>
+          <!-- Passo 1: Escolha do Serviço -->
+          <div class="step-card">
+            <h3 class="step-title">
+              <span class="step-number">1</span> Escolha o Procedimento Desejado
+            </h3>
+            <div id="booking-services-selector" class="services-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+              <!-- Renderizado via JS -->
+            </div>
+          </div>
+
+          <!-- Passo 2: Escolha da Data -->
+          <div class="step-card">
+            <h3 class="step-title">
+              <span class="step-number">2</span> Selecione a Data Desejada
+            </h3>
+            <div class="form-group" style="max-width: 340px;">
+              <label class="form-label" for="booking-date-input">Data do Atendimento</label>
+              <input type="date" id="booking-date-input" class="form-control" onchange="onBookingDateChange()">
+              <p class="form-help">Nota: Por padrão, os horários só aparecem disponíveis após a supervisora autorizar a agenda desta data.</p>
+            </div>
+          </div>
+
+          <!-- Passo 3: Escolha do Horário Vago -->
+          <div class="step-card">
+            <h3 class="step-title">
+              <span class="step-number">3</span> Horários Autorizados & Vagos
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--gray-muted); margin-bottom: 0.75rem;">
+              Apenas os horários expressamente autorizados pela supervisora e que ainda não foram reservados são exibidos:
+            </p>
+            <div id="booking-slots-container" class="slots-grid">
+              <div class="slots-empty" style="grid-column: 1 / -1;">
+                Selecione uma data acima para visualizar os horários disponíveis.
+              </div>
+            </div>
+          </div>
+
+          <!-- Passo 4: Campo de Observação -->
+          <div class="step-card">
+            <h3 class="step-title">
+              <span class="step-number">4</span> Observação para a Designer (Opcional)
+            </h3>
+            <div class="form-group">
+              <label class="form-label" for="booking-observation">
+                Tem alguma preferência, alergia ou informação importante?
+              </label>
+              <textarea 
+                id="booking-observation" 
+                class="form-control" 
+                placeholder="Exemplo: Minha pele é sensível a cera; prefiro henna com acabamento suave; primeira vez que farei o procedimento; tenho falha na sobrancelha direita."
+                rows="3"
+                maxlength="200"
+                oninput="document.getElementById('booking-observation-count').textContent = this.value.length"
+              ></textarea>
+              <p class="form-help"><span id="booking-observation-count">0</span>/200 caracteres</p>
+              <p class="form-help">Sua observação será encaminhada diretamente para a supervisora confirmar o atendimento.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Lateral: Resumo do Agendamento -->
+        <div>
+          <div class="summary-card">
+            <h3 class="summary-title">Resumo do Agendamento</h3>
+            
+            <div class="summary-item">
+              <span class="summary-label">Procedimento:</span>
+              <span class="summary-value" id="summary-service-name">Não selecionado</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Duração estimada:</span>
+              <span class="summary-value" id="summary-service-duration">-</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Data:</span>
+              <span class="summary-value" id="summary-date">-</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Horário:</span>
+              <span class="summary-value" id="summary-time">-</span>
+            </div>
+
+            <div class="summary-total">
+              <span>Valor Total:</span>
+              <span id="summary-total-price">R$ 0,00</span>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" style="width: 100%;" id="btn-confirm-booking" onclick="submitBooking()">
+                Confirmar Agendamento ✨
+              </button>
+              <p style="font-size: 0.78rem; color: var(--gray-muted); text-align: center; margin-top: 0.75rem;">
+                Após a solicitação, a supervisora irá confirmar seu horário.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: MEUS AGENDAMENTOS (CLIENTE) -->
+    <div id="view-my-appointments" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span class="icon">📋</span> Meus Agendamentos</h2>
+            <p style="color: var(--gray-muted); font-size: 0.95rem;">Acompanhe o status e histórico dos seus agendamentos</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchView('book')">
+            + Novo Agendamento
+          </button>
+        </div>
+
+        <div id="my-appointments-list">
+          <div style="text-align: center; padding: 2rem; color: var(--gray-muted);">Carregando agendamentos...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: PAINEL DA SUPERVISORA -->
+    <div id="view-supervisor" class="hidden">
+      
+      <!-- Indicadores / Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fff4e5; color: #ed6c02;">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-pending-count">0</div>
+            <div class="stat-label">Pendentes de Confirmação</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;">✅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-confirmed-count">0</div>
+            <div class="stat-label">Confirmados</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #e1f5fe; color: #0288d1;">📅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-total-count">0</div>
+            <div class="stat-label">Total de Agendamentos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abas internas da Supervisora -->
+      <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem; border-bottom: 1px solid var(--gray-border); padding-bottom: 0.75rem;">
+          <button class="nav-tab-btn active" id="subtab-btn-appointments" onclick="switchSupervisorSubtab('appointments')">
+            📑 Gerenciar & Confirmar Agendamentos
+          </button>
+          <button class="nav-tab-btn" id="subtab-btn-schedules" onclick="switchSupervisorSubtab('schedules')">
+            ⏰ Autorização de Horários da Agenda
+          </button>
+          <button class="nav-tab-btn" id="subtab-btn-services" onclick="switchSupervisorSubtab('services')">
+            💅 Serviços & Valores
+          </button>
+          <button class="nav-tab-btn" id="subtab-btn-clients" onclick="switchSupervisorSubtab('clients')">
+            👥 Clientes & Senhas
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-aba 1: Lista de Agendamentos dos Clientes -->
+      <div id="supervisor-subtab-appointments">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span class="icon">👁️</span> Agendamentos Recebidos</h3>
+              <p style="color: var(--gray-muted); font-size: 0.9rem;">Veja a observação do cliente e confirme ou atualize o status</p>
+            </div>
+            <div class="flex-gap">
+              <label style="font-size: 0.85rem; font-weight: 600;">Status:</label>
+              <select id="supervisor-filter-status" class="form-control" style="width: auto; padding: 0.4rem 0.8rem;" onchange="loadSupervisorAppointments()">
+                <option value="todos">Todos os Status</option>
+                <option value="pendente" selected>🟡 Pendentes para Confirmar</option>
+                <option value="confirmado">🟢 Confirmados</option>
+                <option value="concluido">⚪ Concluídos</option>
+                <option value="cancelado">🔴 Cancelados</option>
+              </select>
+              <input type="date" id="supervisor-filter-date" class="form-control" style="width: auto; padding: 0.4rem 0.8rem;" onchange="loadSupervisorAppointments()">
+              <button class="btn btn-secondary btn-sm" onclick="clearSupervisorFilters()">Limpar Filtro</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Data & Horário</th>
+                  <th>Cliente & Contato</th>
+                  <th>Procedimento</th>
+                  <th style="min-width: 240px;">Observação da Cliente</th>
+                  <th>Status Atual</th>
+                  <th style="text-align: right;">Ações da Supervisora</th>
+                </tr>
+              </thead>
+              <tbody id="supervisor-appointments-tbody">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 2rem;">Carregando agendamentos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-aba 4: Clientes -->
+      <div id="supervisor-subtab-clients" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span class="icon">👥</span> Clientes Cadastradas</h3>
+              <p style="color: var(--gray-muted); font-size: 0.9rem;">Use "Resetar senha" para definir a senha da cliente como 1234; ela poderá alterá-la em Minha Conta.</p>
+            </div>
+          </div>
+          <div id="supervisor-clients-list"></div>
+        </div>
+      </div>
+
+      <!-- Sub-aba 3: Serviços e Valores -->
+      <div id="supervisor-subtab-services" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span class="icon">💅</span> Serviços, Valores e Observações</h3>
+              <p style="color: var(--gray-muted); font-size: 0.9rem;">Edite nome, valor, duração e observações exibidas aos clientes</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openServiceModal()">➕ Novo Serviço</button>
+          </div>
+          <div id="supervisor-services-list"></div>
+        </div>
+      </div>
+
+      <!-- Sub-aba 2: Configurar e Autorizar Horários de Atendimento -->
+      <div id="supervisor-subtab-schedules" class="hidden">
+        
+        <!-- Alerta com a regra de autorização obrigatória -->
+        <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+          <div style="font-size: 1.4rem;">🔒</div>
+          <div style="font-size: 0.9rem; color: #1e3a8a;">
+            <strong>Regra de Agenda Ativa:</strong> Por padrão, <u>todos os horários de qualquer dia ficam estritamente INDISPONÍVEIS</u> para os clientes. Os clientes só conseguem visualizar e agendar horários nesta data se você <strong>AUTORIZAR</strong> explicitamente nos botões abaixo.
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          
+          <!-- Formulário de Autorização de Horários -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 0.5rem;"><span class="icon">✅</span> Autorizar Horários para um Dia</h3>
+            <p style="font-size: 0.88rem; color: var(--gray-muted); margin-bottom: 1.25rem;">
+              Selecione o dia e clique nos horários que deseja autorizar para atendimento aos clientes.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="supervisor-add-date">Data do Atendimento:</label>
+              <input type="date" id="supervisor-add-date" class="form-control" onchange="loadSupervisorSchedulesList()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Horários para Autorizar (Clique para marcar/desmarcar):</label>
+              <div id="quick-hours-pills" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem;">
+                <!-- Chips de 08:00 até 19:00 gerados via JS -->
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllQuickHours()">Marcar Horário Comercial (09:00 às 18:00)</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="supervisor-custom-time">Ou adicionar outro horário personalizado:</label>
+              <div class="flex-gap">
+                <input type="time" id="supervisor-custom-time" class="form-control" style="max-width: 150px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomHourSlot()">Adicionar à Seleção</button>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitSupervisorSchedules()">
+              ✅ Autorizar e Disponibilizar Horários Selecionados
+            </button>
+          </div>
+
+          <!-- Gerador / Autorização em Lote -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 0.5rem;"><span class="icon">📅</span> Marcar Dias no Calendário</h3>
+            <p style="font-size: 0.88rem; color: var(--gray-muted); margin-bottom: 1.25rem;">
+              Escolha no calendário os dias da semana (ou do mês) em que você estará disponível.
+            </p>
+
+            <div class="cal-header">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="changeCalMonth(-1)">‹</button>
+              <strong id="cal-month-label"></strong>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="changeCalMonth(1)">›</button>
+            </div>
+            <div id="multi-calendar" class="multi-cal"></div>
+            <p style="font-size: 0.8rem; color: var(--gray-muted); margin: 0.5rem 0;">
+              Clique nos dias (ou arraste) para marcar. Clique no nome do dia da semana para marcar a coluna inteira. Os horários usados são os marcados ao lado.
+            </p>
+            <div class="flex-gap" style="margin-bottom: 0.75rem;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="selectCalWeek()">Próximos 7 dias</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="clearCalSelection()">Limpar</button>
+              <span id="cal-count" style="font-size: 0.85rem; color: var(--gray-muted); align-self: center;"></span>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="submitCalendarSchedules()">
+              Autorizar Datas Marcadas no Calendário
+            </button>
+          </div>
+        </div>
+
+        <!-- Grade dos Horários Criados para a data selecionada -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span class="icon">📋</span> Gestão de Status dos Horários da Data</h3>
+              <p style="color: var(--gray-muted); font-size: 0.88rem;">Clique nos botões para autorizar ou bloquear horários individualmente ou em grupo</p>
+            </div>
+            <div class="flex-gap" id="day-actions-toolbar">
+              <button class="btn btn-danger btn-sm" onclick="blockAllDaySchedules()" title="Torna todos os horários livres deste dia indisponíveis para clientes">
+                ⛔ Deixar Todos Indisponíveis
+              </button>
+              <button class="btn btn-success btn-sm" onclick="authorizeAllDaySchedules()" title="Autoriza todos os horários cadastrados deste dia">
+                ✅ Liberar Todos
+              </button>
+              <div id="schedule-stats-badge"></div>
+            </div>
+          </div>
+          <div id="supervisor-schedules-grid">
+            <div style="text-align: center; padding: 1.5rem; color: var(--gray-muted);">Selecione uma data para inspecionar os horários.</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: LOGIN -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Entrar na Sua Conta</h3>
+        <button class="modal-close" onclick="closeModals()">&times;</button>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-username">Usuário ou E-mail</label>
+          <input type="text" id="login-username" class="form-control" required placeholder="Digite seu usuário ou e-mail">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Senha</label>
+          <input type="password" id="login-password" class="form-control" required placeholder="Digite sua senha">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+          Entrar
+        </button>
+      </form>
+
+      <div style="margin-top: 1.25rem; text-align: center; font-size: 0.9rem;">
+        Ainda não tem conta? <a href="#" style="color: var(--primary); font-weight: 600;" onclick="openRegisterModal(); return false;">Cadastre-se aqui</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRO SIMPLES DE CLIENTE -->
+  <div class="modal-overlay" id="modal-register">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Cadastro Rápido de Cliente</h3>
+        <button class="modal-close" onclick="closeModals()">&times;</button>
+      </div>
+
+      <form onsubmit="handleRegisterSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Seu Nome Completo *</label>
+          <input type="text" id="reg-name" class="form-control" required placeholder="Ex: Ana Carolina Silva">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-username">Usuário ou E-mail (para login) *</label>
+          <input type="text" id="reg-username" class="form-control" required placeholder="Ex: anasilva ou ana@email.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">WhatsApp / Telefone *</label>
+          <input type="text" id="reg-phone" class="form-control" required placeholder="Ex: (11) 99876-5432">
+          <p class="form-help">Usado para a supervisora confirmar seu horário.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Crie uma Senha Simples *</label>
+          <input type="password" id="reg-password" class="form-control" required placeholder="Mínimo 4 caracteres">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+          Criar Conta e Acessar
+        </button>
+      </form>
+
+      <div style="margin-top: 1.25rem; text-align: center; font-size: 0.9rem;">
+        Já possui conta? <a href="#" style="color: var(--primary); font-weight: 600;" onclick="openLoginModal(); return false;">Faça login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p><strong>ANA CAROLINA BEAUTY • Designer de Sobrancelhas</strong> | Excelência em Design & Visagismo Facial</p>
+    <p style="margin-top: 0.35rem; font-size: 0.8rem;">Sistema de Agendamento Online e Gestão para Supervisoras e Clientes</p>
+    <p style="margin-top: 0.35rem; font-size: 0.8rem;">Para criar seu site entre em contato: <a href="mailto:alanhp95@gmail.com">alanhp95@gmail.com</a></p>
+  </footer>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+  <div class="modal-overlay" id="modal-cal-hours">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Escolha os horários</h3>
+        <button class="modal-close" onclick="closeCalHoursModal()">&times;</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 0.75rem;">
+        Dias marcados: <strong id="cal-modal-days"></strong>
+      </p>
+      <div id="cal-modal-hours" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem;"></div>
+      <div class="flex-gap" style="margin-bottom: 0.75rem;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="selectAllQuickHours()">Horário comercial</button>
+        <input type="time" id="cal-modal-custom-time" class="form-control" style="max-width: 130px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="addCalModalCustomHour()">Adicionar</button>
+      </div>
+      <div id="cal-modal-count" style="font-size: 0.85rem; color: var(--gray-muted); margin-bottom: 0.75rem;"></div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="confirmCalendarSchedules()">✅ Confirmar e Disponibilizar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-service">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="service-modal-title">Serviço</h3>
+        <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+      </div>
+      <input type="hidden" id="service-edit-id">
+      <div class="form-group">
+        <label class="form-label" for="service-name">Nome:</label>
+        <input type="text" id="service-name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="service-price">Valor (R$):</label>
+        <input type="number" id="service-price" class="form-control" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="service-duration">Duração (minutos):</label>
+        <input type="number" id="service-duration" class="form-control" min="5" step="5">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="service-desc">Observações / Descrição:</label>
+        <textarea id="service-desc" class="form-control" rows="3"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="saveService()">💾 Salvar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-profile">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Minha Conta</h3>
+        <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-name">Nome:</label>
+        <input type="text" id="profile-name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-username">E-mail / Usuário (usado no login):</label>
+        <input type="text" id="profile-username" class="form-control" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-phone">Telefone / WhatsApp:</label>
+        <input type="tel" id="profile-phone" class="form-control" autocomplete="tel">
+      </div>
+      <button class="btn btn-primary" style="width: 100%; margin-bottom: 1.25rem;" onclick="saveProfileName()">💾 Salvar Dados</button>
+      <hr style="border: none; border-top: 1px solid var(--gray-border); margin-bottom: 1rem;">
+      <div class="form-group">
+        <label class="form-label" for="profile-current-password">Senha atual:</label>
+        <input type="password" id="profile-current-password" class="form-control" autocomplete="current-password">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-new-password">Nova senha (mín. 4 caracteres):</label>
+        <input type="password" id="profile-new-password" class="form-control" autocomplete="new-password">
+      </div>
+      <button class="btn btn-secondary" style="width: 100%;" onclick="savePassword()">🔑 Alterar Senha</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-client-edit">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Editar Cliente</h3>
+        <button class="modal-close" onclick="closeClientEditModal()">&times;</button>
+      </div>
+      <input type="hidden" id="client-edit-id">
+      <div class="form-group">
+        <label class="form-label" for="client-edit-name">Nome:</label>
+        <input type="text" id="client-edit-name" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="client-edit-username">E-mail / Usuário:</label>
+        <input type="text" id="client-edit-username" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="client-edit-phone">Telefone / WhatsApp:</label>
+        <input type="tel" id="client-edit-phone" class="form-control">
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="saveClientEdit()">💾 Salvar</button>
+    </div>
+  </div>
+
+</body>
+</html>
