@@ -1,0 +1,9 @@
+# TESTE (plano gratuito): sem disco, o banco e apagado a cada deploy/reinicio.
+# Para producao: plan: starter + disco (veja README).
+services:
+  - type: web
+    name: ana-carolina-beauty
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT --proxy-headers
